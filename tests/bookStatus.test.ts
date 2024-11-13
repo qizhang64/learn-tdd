@@ -56,4 +56,20 @@ describe("showAllBooksStatus", () => {
         expect(res.status).toHaveBeenCalledWith(200);
         expect(res.send).toHaveBeenCalledWith([]);
     });
+
+    it("should handle errors gracefully and return 500", async () => {
+        // Mock the BookInstance model's find method to throw an error
+        const mockFind = jest.fn().mockReturnValue({
+            populate: jest.fn().mockRejectedValue(new Error("Database error")),
+        });
+        BookInstance.find = mockFind;
+
+        // Act: Call the function
+        await showAllBooksStatus(res as Response);
+
+        // Assert: Check if the response is correct
+        expect(mockFind).toHaveBeenCalledWith({ status: { $eq: "Available" } });
+        expect(res.status).toHaveBeenCalledWith(500);
+        expect(res.send).toHaveBeenCalledWith("Status not found");
+    });
 });

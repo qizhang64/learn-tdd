@@ -16,3 +16,4 @@ Run coverage
 `$ npx jest --coverage /path/to/test/file`
 
 View coverage report in `coverage/lcov-report/index.html`
+`$ open coverage/lcov-report/index.html`

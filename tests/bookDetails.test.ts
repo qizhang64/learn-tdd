@@ -25,13 +25,13 @@ describe('showBookDtls', () => {
         jest.clearAllMocks(); // Clear mocks after each test
     });
 
-    it('should return book details when the book and copies exist', async () => {
+    it('should return book details when the book and copies exist', async () => { // happy case
         // Mocking the Book model's findOne and populate methods
         const mockFindOne = jest.fn().mockReturnValue({
             populate: jest.fn().mockReturnThis(), // Allows method chaining
             exec: jest.fn().mockResolvedValue(mockBook) // Resolves to your mock book
         });
-        Book.findOne = mockFindOne;
+        Book.findOne = mockFindOne; // whole thing is a chain in fucntion, should return mongo
 
         // Mocking the BookInstance model's find and select methods
         const mockFind = jest.fn().mockReturnValue({
@@ -98,5 +98,20 @@ describe('showBookDtls', () => {
         // Assert
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.send).toHaveBeenCalledWith('Error fetching book 12345');
+    });
+
+
+// there is branch saying not checked -- whether "string"
+// we can leave it there as there is no type check for javascript
+    it('should return 404 for a non string book id', async () => { // happy case
+        // Arrange
+        const id = {id: '12345'};
+
+        // Act
+        await showBookDtls(res as Response, id as unknown as string);
+
+        // Assert
+        expect(res.status).toHaveBeenCalledWith(404);
+        expect(res.send).toHaveBeenCalledWith(`Book ${id} not found`);
     });
 });
